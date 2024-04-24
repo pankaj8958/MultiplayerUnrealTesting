@@ -1,0 +1,58 @@
+[
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTesting.Build.cs",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	},
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTesting.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	},
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTesting.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	},
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTestingCharacter.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	},
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTestingCharacter.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	},
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTestingGameMode.cpp",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	},
+	{
+		"file": "/Users/pankaj/Documents/Workspace/MPTesting/Source/MPTesting/MPTestingGameMode.h",
+		"arguments": [
+			"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+			"@/Users/pankaj/Documents/Workspace/MPTesting/.vscode/compileCommands_Default/MPTesting.1.rsp"
+		],
+		"directory": "/Users/Shared/Epic Games/UE_5.3/Engine/Source"
+	}
+]
