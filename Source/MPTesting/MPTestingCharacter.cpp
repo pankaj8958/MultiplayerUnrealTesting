@@ -134,7 +134,7 @@ void AMPTestingCharacter::OpenLobby()
 	UWorld* world = GetWorld();
 	if(world)
 	{
-		world->ServerTravel("/Game/ThirdPersonCPP/Maps/Labby?listen");
+		world->ServerTravel("/Game/ThirdPerson/Maps/Lobby?listen");
 	}
 }
 
