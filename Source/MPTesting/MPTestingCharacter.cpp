@@ -12,6 +12,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
+#include "OnlineSubsystem.h"
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,6 +54,21 @@ AMPTestingCharacter::AMPTestingCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	
+	IOnlineSubsystem* onlineSubsystem = IOnlineSubsystem::Get();
+	if(onlineSubsystem)
+	{
+		OnlineSessionInterface = onlineSubsystem->GetSessionInterface();
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Blue,
+				FString::Printf(TEXT("Found subsytem %s"), *onlineSubsystem->GetSubsystemName().ToString())
+			);
+		}
+	}
 }
 
 void AMPTestingCharacter::BeginPlay()
@@ -129,25 +145,25 @@ void AMPTestingCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-void AMPTestingCharacter::OpenLobby()
-{
-	UWorld* world = GetWorld();
-	if(world)
-	{
-		world->ServerTravel("/Game/ThirdPerson/Maps/Lobby?listen");
-	}
-}
+// void AMPTestingCharacter::OpenLobby()
+// {
+// 	UWorld* world = GetWorld();
+// 	if(world)
+// 	{
+// 		world->ServerTravel("/Game/ThirdPerson/Maps/Lobby?listen");
+// 	}
+// }
 
-void AMPTestingCharacter::CallOpenLevel(const FString &address)
-{
-	UGameplayStatics::OpenLevel(this, *address);
-}
+// void AMPTestingCharacter::CallOpenLevel(const FString &address)
+// {
+// 	UGameplayStatics::OpenLevel(this, *address);
+// }
 
-void AMPTestingCharacter::CallClientTravel(const FString &address)
-{
-	APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
-	if(playerController)
-	{
-		playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
-	}
-}
+// void AMPTestingCharacter::CallClientTravel(const FString &address)
+// {
+// 	APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
+// 	if(playerController)
+// 	{
+// 		playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
+// 	}
+// }
