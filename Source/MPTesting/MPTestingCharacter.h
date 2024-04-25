@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSubsystem.h"
 #include "MPTestingCharacter.generated.h"
 
 class USpringArmComponent;
@@ -76,6 +78,13 @@ public:
 	// UFUNCTION(BlueprintCallable)
 	// void CallClientTravel(const FString& address);
 	public:
-	TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> OnlineSessionInterface;
+	IOnlineSessionPtr OnlineSessionInterface;
+	protected:
+	UFUNCTION(BlueprintCallable)
+	void CreateGameSession();
+	void OnCreateSessionComplete(FName sessionName, bool bWasSuccessful);
+
+	private:
+	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
 };
 
