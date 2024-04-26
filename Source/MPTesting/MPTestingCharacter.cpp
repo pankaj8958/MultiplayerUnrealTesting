@@ -13,6 +13,7 @@
 #include "InputActionValue.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSessionSettings.h"
+#include "Online/OnlineSessionNames.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -20,7 +21,8 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 // AMPTestingCharacter
 
 AMPTestingCharacter::AMPTestingCharacter():
-CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete))
+	CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete)),
+	FindSessionCompleteDelegate(FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -110,6 +112,9 @@ void AMPTestingCharacter::CreateGameSession()
 	sessionSettings->bAllowJoinViaPresence = true;
 	sessionSettings->bShouldAdvertise = true;
 	sessionSettings->bUsesPresence = true;
+	sessionSettings->bUseLobbiesIfAvailable = true;
+	sessionSettings->Set(FName("MatchType"), FString("FreeForAll"), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	
 	const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	OnlineSessionInterface->CreateSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *sessionSettings);
 }
@@ -141,6 +146,47 @@ void AMPTestingCharacter::OnCreateSessionComplete(FName sessionName, bool bWasSu
 	}
 }
 
+void AMPTestingCharacter::OnJoinGameSession()
+{
+	if(!OnlineSessionInterface.IsValid())
+	{
+		return;
+	}
+	
+	OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegate);
+
+	sessionSearch = MakeShareable(new FOnlineSessionSearch());
+	sessionSearch->MaxSearchResults = 10000;
+	sessionSearch->bIsLanQuery = false;
+	sessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+
+	const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	OnlineSessionInterface->FindSessions(*localPlayer->GetPreferredUniqueNetId(), sessionSearch.ToSharedRef());
+}
+
+
+void AMPTestingCharacter::OnFindSessionsComplete(bool bWasSuccessful)
+{
+	if(sessionSearch == nullptr)
+	{
+		return;
+	}
+	for (auto result : sessionSearch->SearchResults)
+	{
+		FString id = result.GetSessionIdStr();
+		FString usr = result.Session.OwningUserName;
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Cyan,
+				FString::Printf(TEXT("Id %s User %s "), *id, *usr)
+			);
+		}
+	}
+	
+}
 //////////////////////////////////////////////////////////////////////////
 // Input
 
