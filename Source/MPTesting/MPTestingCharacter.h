@@ -87,10 +87,13 @@ public:
 
 	void OnCreateSessionComplete(FName sessionName, bool bWasSuccessful);
 	void OnFindSessionsComplete(bool bWasSuccessful);
+	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 
 	private:
 	FOnCreateSessionCompleteDelegate CreateSessionCompleteDelegate;
 	FOnFindSessionsCompleteDelegate FindSessionCompleteDelegate;
 	TSharedPtr<FOnlineSessionSearch> sessionSearch;
+	FOnJoinSessionCompleteDelegate JoinSessionCompleteDelegate;
+	void DefaultLog(FString message);
 };
 

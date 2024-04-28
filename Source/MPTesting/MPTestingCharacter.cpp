@@ -22,7 +22,8 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 AMPTestingCharacter::AMPTestingCharacter():
 	CreateSessionCompleteDelegate(FOnCreateSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnCreateSessionComplete)),
-	FindSessionCompleteDelegate(FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete))
+	FindSessionCompleteDelegate(FOnFindSessionsCompleteDelegate::CreateUObject(this, &ThisClass::OnFindSessionsComplete)),
+	JoinSessionCompleteDelegate(FOnJoinSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnJoinSessionComplete))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -123,7 +124,7 @@ void AMPTestingCharacter::OnCreateSessionComplete(FName sessionName, bool bWasSu
 {
 	if(bWasSuccessful)
 	{
-	if(GEngine)
+		if(GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
 				-1,
@@ -132,6 +133,12 @@ void AMPTestingCharacter::OnCreateSessionComplete(FName sessionName, bool bWasSu
 				FString::Printf(TEXT("Create session %s"), *sessionName.ToString())
 			);
 		}
+		UWorld* world = GetWorld();
+		if(world)
+		{
+			world->ServerTravel(FString("/Game/ThirdPerson/Maps/Lobby?listen"));
+		}
+
 	} else
 	{
 		if(GEngine)
@@ -152,29 +159,38 @@ void AMPTestingCharacter::OnJoinGameSession()
 	{
 		return;
 	}
-	
+	DefaultLog(FString::Printf(TEXT("Valid On JoinGame Start")));
 	OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegate);
 
 	sessionSearch = MakeShareable(new FOnlineSessionSearch());
 	sessionSearch->MaxSearchResults = 10000;
 	sessionSearch->bIsLanQuery = false;
 	sessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-
+	
 	const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	OnlineSessionInterface->FindSessions(*localPlayer->GetPreferredUniqueNetId(), sessionSearch.ToSharedRef());
+	DefaultLog(FString::Printf(TEXT("Valid On JoinGame End")));
 }
 
 
 void AMPTestingCharacter::OnFindSessionsComplete(bool bWasSuccessful)
 {
+	if(!OnlineSessionInterface.IsValid())
+	{
+		return;
+	}
+	DefaultLog(FString::Printf(TEXT("On FindSessionComplete %d"), bWasSuccessful));
 	if(sessionSearch == nullptr)
 	{
 		return;
 	}
+	DefaultLog(FString::Printf(TEXT("On FindSessionComplete count %d"), sessionSearch->SearchResults.Num()));
 	for (auto result : sessionSearch->SearchResults)
 	{
 		FString id = result.GetSessionIdStr();
 		FString usr = result.Session.OwningUserName;
+		FString matchType;
+		result.Session.SessionSettings.Get(FName(matchType), matchType);
 		if(GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
@@ -184,8 +200,59 @@ void AMPTestingCharacter::OnFindSessionsComplete(bool bWasSuccessful)
 				FString::Printf(TEXT("Id %s User %s "), *id, *usr)
 			);
 		}
+		if(matchType == FString("FreeForAll"))
+		{
+			if(GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(
+					-1,
+					15.f,
+					FColor::Cyan,
+					FString::Printf(TEXT("Joining match type %s"), *matchType)
+				);
+			}
+			OnlineSessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
+			const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+			OnlineSessionInterface->JoinSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, result);
+		}
 	}
-	
+}
+void AMPTestingCharacter::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result)
+{
+	if(!OnlineSessionInterface.IsValid())
+	{
+		return;
+	}
+	FString address;
+	if(OnlineSessionInterface->GetResolvedConnectString(NAME_GameSession, address))
+	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Yellow,
+				FString::Printf(TEXT("Connect String  %s"), *address)
+			);
+		}
+		APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
+		if(playerController)
+		{
+			playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
+		}
+	}
+}
+void AMPTestingCharacter::DefaultLog(FString message)
+{
+	if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Yellow,
+				message
+			);
+		}
 }
 //////////////////////////////////////////////////////////////////////////
 // Input
