@@ -190,7 +190,7 @@ void AMPTestingCharacter::OnFindSessionsComplete(bool bWasSuccessful)
 		FString id = result.GetSessionIdStr();
 		FString usr = result.Session.OwningUserName;
 		FString matchType;
-		result.Session.SessionSettings.Get(FName(matchType), matchType);
+		result.Session.SessionSettings.Get(FName("matchType"), matchType);
 		if(GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
@@ -211,6 +211,7 @@ void AMPTestingCharacter::OnFindSessionsComplete(bool bWasSuccessful)
 					FString::Printf(TEXT("Joining match type %s"), *matchType)
 				);
 			}
+			DefaultLog(FString::Printf(TEXT("matchtype matched: %s"), *matchType));
 			OnlineSessionInterface->AddOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegate);
 			const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 			OnlineSessionInterface->JoinSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, result);
@@ -219,6 +220,7 @@ void AMPTestingCharacter::OnFindSessionsComplete(bool bWasSuccessful)
 }
 void AMPTestingCharacter::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result)
 {
+	DefaultLog(FString::Printf(TEXT("On Join SessionComplete ")));
 	if(!OnlineSessionInterface.IsValid())
 	{
 		return;
@@ -226,6 +228,7 @@ void AMPTestingCharacter::OnJoinSessionComplete(FName sessionName, EOnJoinSessio
 	FString address;
 	if(OnlineSessionInterface->GetResolvedConnectString(NAME_GameSession, address))
 	{
+		DefaultLog(FString::Printf(TEXT("On Join SessionComplete address %s"), *address));
 		if(GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
