@@ -41,7 +41,7 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 numPublicConnection, FStr
 	lastSessionSettings->bUsesPresence = true;
 	lastSessionSettings->bUseLobbiesIfAvailable = true;
     
-	lastSessionSettings->Set(FName("matchType"), matchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	lastSessionSettings->Set(FName("MatchType"), matchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
     const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
     if(sessionInterface->CreateSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *lastSessionSettings))
@@ -53,9 +53,27 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 numPublicConnection, FStr
 
 void UMultiplayerSessionSubsystem::FindSessions(int32 maxSearchResult)
 {
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            15.f,
+            FColor::Yellow,
+            FString(TEXT("Find Session 1"))
+        );
+    }
     if(!sessionInterface.IsValid())
     {
         return;
+    }
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            15.f,
+            FColor::Yellow,
+            FString(TEXT("Find Session 2"))
+        );
     }
     findSessionCompleteDelegate = sessionInterface->AddOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegate);
     lastSessionSearch = MakeShareable(new FOnlineSessionSearch());
@@ -66,6 +84,15 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 maxSearchResult)
     const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
     if(!sessionInterface->FindSessions(*localPlayer->GetPreferredUniqueNetId(), lastSessionSearch.ToSharedRef()))
     {
+        if(GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(
+                -1,
+                15.f,
+                FColor::Yellow,
+                FString(TEXT("Find Session 3"))
+            );
+        }
         sessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(findSessionCompleteDelegate);
         multiplayerOnFindSessionComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
     }
@@ -73,6 +100,15 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 maxSearchResult)
 
 void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult &sessionResult)
 {
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            15.f,
+            FColor::Yellow,
+            FString(TEXT("JoinSession Session 3"))
+        );
+    }
     if(!sessionInterface.IsValid())
     {
         multiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);

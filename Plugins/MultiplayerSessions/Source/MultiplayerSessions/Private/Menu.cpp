@@ -11,7 +11,7 @@ void UMenu::MenuSetup(int32 numberOfPublicConnections, FString typeOfMatch)
     matchType = typeOfMatch;
     AddToViewport();
     SetVisibility(ESlateVisibility::Visible);
-    bool bIsFocusable = true;
+    
     UWorld* world = GetWorld();
     if(world)
     {
@@ -99,22 +99,68 @@ void UMenu::OnCreateSessionComplete(bool bSuccessful)
 
 void UMenu::OnFindSessionComplete(const TArray<FOnlineSessionSearchResult> &sessionResults, bool bWasSuccessfull)
 {
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            15.f,
+            FColor::Yellow,
+            FString(TEXT("Find Session Complete1"))
+        );
+    }
     if(multiplayerSessionSubsystem == nullptr)
     {
         return;
     }
-
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            15.f,
+            FColor::Yellow,
+            FString::Printf(TEXT("On FindSession  count %d"), sessionResults.Num())
+        );
+    }
     for (auto result :  sessionResults)
     {
         FString settingValue;
-        result.Session.SessionSettings.Get(FName("matchType"), settingValue);
+        result.Session.SessionSettings.Get(FName("MatchType"), settingValue);
         if(settingValue == matchType)
         {
+            if(GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(
+                    -1,
+                    15.f,
+                    FColor::Yellow,
+                    FString(TEXT("Match type found"))
+                );
+            }
             multiplayerSessionSubsystem->JoinSession(result);
             return;
+        } else
+        {
+            if(GEngine)
+            {
+                GEngine->AddOnScreenDebugMessage(
+                    -1,
+                    15.f,
+                    FColor::Yellow,
+                    FString::Printf(TEXT("On FindSessionComplete setting  %s"), *settingValue)
+                );
+            }
         }
+        
     }
-    
+    if(GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            -1,
+            15.f,
+            FColor::Yellow,
+            FString(TEXT("Match type Not found"))
+        );
+    }
 }
 
 void UMenu::OnJoinSessionComplete(EOnJoinSessionCompleteResult::Type result)
@@ -155,6 +201,10 @@ void UMenu::HostButtonClick()
 
 void UMenu::JoinButtonClick()
 {
+    if(multiplayerSessionSubsystem == nullptr)
+    {
+        return;
+    }
     if(GEngine)
     {
         GEngine->AddOnScreenDebugMessage(
@@ -167,7 +217,6 @@ void UMenu::JoinButtonClick()
     if(multiplayerSessionSubsystem)
     {
         multiplayerSessionSubsystem->FindSessions(1000);
-        //multiplayerSessionSubsystem->JoinSession();
     }
 }
 
