@@ -125,6 +125,8 @@ void UMenu::OnFindSessionComplete(const TArray<FOnlineSessionSearchResult> &sess
     {
         FString settingValue;
         result.Session.SessionSettings.Get(FName("MatchType"), settingValue);
+        FString id = result.GetSessionIdStr();
+        FString usr = result.Session.OwningUserName;
         if(settingValue == matchType)
         {
             if(GEngine)
@@ -146,7 +148,7 @@ void UMenu::OnFindSessionComplete(const TArray<FOnlineSessionSearchResult> &sess
                     -1,
                     15.f,
                     FColor::Yellow,
-                    FString::Printf(TEXT("On FindSessionComplete setting  %s"), *settingValue)
+                    FString::Printf(TEXT("Id %s User %s "), *id, *usr)
                 );
             }
         }
@@ -216,7 +218,7 @@ void UMenu::JoinButtonClick()
     }
     if(multiplayerSessionSubsystem)
     {
-        multiplayerSessionSubsystem->FindSessions(1000);
+        multiplayerSessionSubsystem->FindSessions(100000);
     }
 }
 

@@ -41,10 +41,10 @@ void UMultiplayerSessionSubsystem::CreateSession(int32 numPublicConnection, FStr
 	lastSessionSettings->bUsesPresence = true;
 	lastSessionSettings->bUseLobbiesIfAvailable = true;
     
-	lastSessionSettings->Set(FName("MatchType"), matchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	lastSessionSettings->Set(FName("matchType"), matchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
     const ULocalPlayer* localPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-    if(sessionInterface->CreateSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *lastSessionSettings))
+    if(!sessionInterface->CreateSession(*localPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *lastSessionSettings))
     {
         sessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(createSessionCompleteDelegate);
         multiplayerOnCreateSessionComplete.Broadcast(false);
