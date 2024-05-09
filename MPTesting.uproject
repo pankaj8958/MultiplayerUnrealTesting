@@ -7,7 +7,10 @@
 		{
 			"Name": "MPTesting",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [
@@ -22,12 +25,5 @@
 			"Name": "OnlineSubsystemSteam",
 			"Enabled": true
 		}
-	],
-	"TargetPlatforms": [
-		"Linux",
-		"LinuxArm64",
-		"Mac",
-		"TVOS",
-		"Windows"
 	]
 }
