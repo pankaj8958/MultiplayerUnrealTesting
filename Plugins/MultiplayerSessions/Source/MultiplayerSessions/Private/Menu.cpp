@@ -5,8 +5,9 @@
 #include "Components/Button.h"
 #include "MultiplayerSessionSubsystem.h"
 #include "OnlineSubsystem.h"
-void UMenu::MenuSetup(int32 numberOfPublicConnections, FString typeOfMatch)
+void UMenu::MenuSetup(int32 numberOfPublicConnections, FString typeOfMatch, FString lobbyPath)
 {
+    pathToLobby = FString::Printf(TEXT("%s?listen"),*lobbyPath);
     numPublicConnections = numberOfPublicConnections;
     matchType = typeOfMatch;
     AddToViewport();
@@ -80,7 +81,7 @@ void UMenu::OnCreateSessionComplete(bool bSuccessful)
             UWorld* world = GetWorld();
             if(world)
             {
-                world->ServerTravel("/Game/ThirdPerson/Maps/Lobby?listen");
+                world->ServerTravel(pathToLobby);
             }
         }
     } else
@@ -195,6 +196,7 @@ void UMenu::OnStartSessionComplete(bool bSuccessful)
 
 void UMenu::HostButtonClick()
 {
+    //HostButton>SetIsEnabled(false);
     if(multiplayerSessionSubsystem)
     {
         multiplayerSessionSubsystem->CreateSession(numPublicConnections, matchType);
@@ -207,15 +209,7 @@ void UMenu::JoinButtonClick()
     {
         return;
     }
-    if(GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            -1,
-            15.f,
-            FColor::Yellow,
-            FString(TEXT("Join Button Clicked"))
-        );
-    }
+    //JoinButton>SetIsEnabled(false);
     if(multiplayerSessionSubsystem)
     {
         multiplayerSessionSubsystem->FindSessions(100000);
